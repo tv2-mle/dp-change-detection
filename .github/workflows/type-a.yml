@@ -1,0 +1,17 @@
+# .github/workflows/type-a.yml
+name: Type A Flow
+
+on:
+  workflow_call:
+    inputs:
+      folder_name:
+        required: true
+        type: string
+
+jobs:
+  echo:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Echo message
+        run: |
+          echo "hello im in type_a flows for ${{ inputs.folder_name }}"

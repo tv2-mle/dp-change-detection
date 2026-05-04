@@ -1,0 +1,40 @@
+# .github/workflows/pr-router.yml
+name: PR router
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  detect:
+    runs-on: ubuntu-latest
+    outputs:
+      type_a: ${{ steps.filter.outputs.type_a }}
+      type_b: ${{ steps.filter.outputs.type_b }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            type_a:
+              - 'infrastructure/platform/**'
+
+            type_b:
+              - 'infrastructure/access-control/**'
+
+  type-a-flow:
+    needs: detect
+    if: needs.detect.outputs.type_a == 'true'
+    uses: ./.github/workflows/type-a.yml
+    with:
+      folder_name: infrastructure/platform
+
+  type-b-flow:
+    needs: detect
+    if: needs.detect.outputs.type_b == 'true'
+    uses: ./.github/workflows/type-b.yml
+    with:
+      folder_name: infrastructure/access-control
